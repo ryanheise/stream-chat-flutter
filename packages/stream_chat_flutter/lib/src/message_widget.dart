@@ -209,16 +209,36 @@ class MessageWidget extends StatefulWidget {
             );
           },
           'video': (context, message, attachment) {
-            return VideoAttachment(
-              attachment: attachment,
-              messageTheme: messageTheme,
-              size: Size(
-                MediaQuery.of(context).size.width * 0.8,
-                MediaQuery.of(context).size.height * 0.3,
+            VideoPackage package;
+            if (videoPackages == null) {
+              package = VideoPackage(context, attachment, () {});
+            } else {
+              package = videoPackages[
+                      '${message.id}${message.attachments.indexOf(attachment)}'] ??
+                  VideoPackage(context, attachment, () {});
+            }
+
+            if (videoPackages != null) {
+              videoPackages[
+                      '${message.id}${message.attachments.indexOf(attachment)}'] =
+                  package;
+            }
+
+            return Transform(
+              transform: Matrix4.rotationY(reverse ? pi : 0),
+              alignment: Alignment.center,
+              child: VideoAttachment(
+                attachment: attachment,
+                messageTheme: messageTheme,
+                size: Size(
+                  MediaQuery.of(context).size.width * 0.8,
+                  MediaQuery.of(context).size.height * 0.3,
+                ),
+                message: message,
+                onShowMessage: onShowMessage,
+                onReturnAction: onReturnAction,
+                videoPackage: package,
               ),
-              message: message,
-              onShowMessage: onShowMessage,
-              onReturnAction: onReturnAction,
             );
           },
           'giphy': (context, message, attachment) {
@@ -838,41 +858,6 @@ class _MessageWidgetState extends State<MessageWidget> {
         children: widget.message.attachments
                 ?.where((element) => element.ogScrapeUrl == null)
                 ?.map((attachment) {
-              if (attachment.type == 'video') {
-                VideoPackage package;
-
-                if (widget.videoPackages == null) {
-                  package = VideoPackage(context, attachment, () {});
-                } else {
-                  package = widget?.videoPackages[
-                          '${widget.message.id}${widget.message.attachments.indexOf(attachment)}'] ??
-                      VideoPackage(context, attachment, () {});
-                }
-
-                if (widget.videoPackages != null) {
-                  widget.videoPackages[
-                          '${widget.message.id}${widget.message.attachments.indexOf(attachment)}'] =
-                      package;
-                }
-
-                return Transform(
-                  transform: Matrix4.rotationY(widget.reverse ? pi : 0),
-                  alignment: Alignment.center,
-                  child: VideoAttachment(
-                    attachment: attachment,
-                    messageTheme: widget.messageTheme,
-                    size: Size(
-                      MediaQuery.of(context).size.width * 0.8,
-                      MediaQuery.of(context).size.height * 0.3,
-                    ),
-                    message: widget.message,
-                    onShowMessage: widget.onShowMessage,
-                    onReturnAction: widget.onReturnAction,
-                    videoPackage: package,
-                  ),
-                );
-              }
-
               final attachmentBuilder =
                   widget.attachmentBuilders[attachment.type];
 
