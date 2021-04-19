@@ -252,7 +252,7 @@ class StreamChatClient {
     this.httpClient.options.connectTimeout = connectTimeout.inMilliseconds;
     this.httpClient.interceptors.add(
           InterceptorsWrapper(
-            onRequest: (options) async {
+            onRequest: (options, handler) async {
               options.queryParameters.addAll(_commonQueryParams);
               options.headers.addAll(_httpHeaders);
 
@@ -288,7 +288,8 @@ class StreamChatClient {
         );
   }
 
-  Future<void> _tokenExpiredInterceptor(DioError err) async {
+  Future<void> _tokenExpiredInterceptor(
+      DioError err, ErrorInterceptorHandler handler) async {
     final apiError = ApiError(
       err.response?.data,
       err.response?.statusCode,
@@ -313,13 +314,29 @@ class StreamChatClient {
 
         try {
           return await httpClient.request(
-            err.request.path,
-            cancelToken: err.request.cancelToken,
-            data: err.request.data,
-            onReceiveProgress: err.request.onReceiveProgress,
-            onSendProgress: err.request.onSendProgress,
-            queryParameters: err.request.queryParameters,
-            options: err.request,
+            err.requestOptions.path,
+            cancelToken: err.requestOptions.cancelToken,
+            data: err.requestOptions.data,
+            onReceiveProgress: err.requestOptions.onReceiveProgress,
+            onSendProgress: err.requestOptions.onSendProgress,
+            queryParameters: err.requestOptions.queryParameters,
+            options: Options(
+              method: err.requestOptions.method,
+              sendTimeout: err.requestOptions.sendTimeout,
+              receiveTimeout: err.requestOptions.receiveTimeout,
+              extra: err.requestOptions.extra,
+              headers: err.requestOptions.headers,
+              responseType: err.requestOptions.responseType,
+              contentType: err.requestOptions.contentType,
+              validateStatus: err.requestOptions.validateStatus,
+              receiveDataWhenStatusError:
+                  err.requestOptions.receiveDataWhenStatusError,
+              followRedirects: err.requestOptions.followRedirects,
+              maxRedirects: err.requestOptions.maxRedirects,
+              requestEncoder: err.requestOptions.requestEncoder,
+              responseDecoder: err.requestOptions.responseDecoder,
+              listFormat: err.requestOptions.listFormat,
+            ),
           );
         } catch (err) {
           return err;
@@ -784,7 +801,7 @@ class StreamChatClient {
   }
 
   Object _parseError(DioError error) {
-    if (error.type == DioErrorType.RESPONSE) {
+    if (error.type == DioErrorType.response) {
       final apiError =
           ApiError(error.response?.data, error.response?.statusCode);
       logger.severe('apiError: ${apiError.toString()}');
