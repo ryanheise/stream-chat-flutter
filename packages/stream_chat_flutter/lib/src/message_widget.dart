@@ -113,7 +113,6 @@ class MessageWidget extends StatefulWidget {
               return Padding(
                 padding: attachmentPadding,
                 child: wrapAttachmentWidget(
-                  context,
                   Material(
                     color: messageTheme.messageBackgroundColor,
                     child: ImageGroup(
@@ -129,13 +128,11 @@ class MessageWidget extends StatefulWidget {
                     ),
                   ),
                   border,
-                  reverse,
                 ),
               );
             }
 
             return wrapAttachmentWidget(
-              context,
               ImageAttachment(
                 attachment: attachments[0],
                 message: message,
@@ -153,7 +150,6 @@ class MessageWidget extends StatefulWidget {
                     : null,
               ),
               border,
-              reverse,
             );
           },
           'video': (context, message, attachments) {
@@ -162,7 +158,6 @@ class MessageWidget extends StatefulWidget {
             );
 
             return wrapAttachmentWidget(
-              context,
               Column(
                 children: attachments.map((attachment) {
                   final mediaQueryData = MediaQuery.of(context);
@@ -185,7 +180,6 @@ class MessageWidget extends StatefulWidget {
                 }).toList(),
               ),
               border,
-              reverse,
             );
           },
           'giphy': (context, message, attachments) {
@@ -194,7 +188,6 @@ class MessageWidget extends StatefulWidget {
             );
 
             return wrapAttachmentWidget(
-              context,
               Column(
                 children: attachments.map((attachment) {
                   final mediaQueryData = MediaQuery.of(context);
@@ -211,7 +204,6 @@ class MessageWidget extends StatefulWidget {
                 }).toList(),
               ),
               border,
-              reverse,
             );
           },
           'file': (context, message, attachments) {
@@ -228,7 +220,6 @@ class MessageWidget extends StatefulWidget {
                   .map<Widget>((attachment) {
                     final mediaQueryData = MediaQuery.of(context);
                     return wrapAttachmentWidget(
-                      context,
                       FileAttachment(
                         message: message,
                         attachment: attachment,
@@ -238,7 +229,6 @@ class MessageWidget extends StatefulWidget {
                         ),
                       ),
                       border,
-                      reverse,
                     );
                   })
                   .insertBetween(SizedBox(
