@@ -325,12 +325,9 @@ StreamSvgIcon getFileTypeImage(String? type) {
 
 /// Wraps attachment widget with custom shape
 Widget wrapAttachmentWidget(
-  BuildContext context,
-  Widget attachmentWidget,
-  ShapeBorder attachmentShape,
-  // ignore: avoid_positional_boolean_parameters
-  bool reverse,
-) =>
+  Widget attachmentWidget, [
+  ShapeBorder attachmentShape = const RoundedRectangleBorder(),
+]) =>
     Material(
       clipBehavior: Clip.antiAlias,
       shape: attachmentShape,
