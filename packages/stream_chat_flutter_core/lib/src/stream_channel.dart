@@ -346,6 +346,7 @@ class StreamChannelState extends State<StreamChannel> {
 
   @override
   Widget build(BuildContext context) {
+    print('### StreamChannel.build');
     Widget child = FutureBuilder<List<bool>>(
       future: Future.wait(_futures),
       initialData: [
@@ -353,6 +354,7 @@ class StreamChannelState extends State<StreamChannel> {
         if (initialMessageId != null) false,
       ],
       builder: (context, snapshot) {
+        print('### StreamChannel future builder. snapshot=$snapshot');
         if (snapshot.hasError) {
           var message = snapshot.error.toString();
           if (snapshot.error is DioError) {
@@ -363,16 +365,23 @@ class StreamChannelState extends State<StreamChannel> {
               message = 'Check your connection and retry';
             }
           }
+          print('### Displaying error: $message');
           return Center(child: Text(message));
         }
+        print('### StreamChannel rendering');
         final initialized = snapshot.data![0];
+        print('### initialized: $initialized');
         // ignore: avoid_bool_literals_in_conditional_expressions
         final dataLoaded = initialMessageId == null ? true : snapshot.data![1];
+        print('### dataLoaded: $dataLoaded');
+        print('### showLoading: ${widget.showLoading}');
         if (widget.showLoading && (!initialized || !dataLoaded)) {
+          print('### Showing circular progress indicator');
           return const Center(
             child: CircularProgressIndicator(),
           );
         }
+        print('### Rendering actual child');
         return widget.child;
       },
     );

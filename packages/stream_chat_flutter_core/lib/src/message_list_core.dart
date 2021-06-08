@@ -140,20 +140,27 @@ class MessageListCoreState extends State<MessageListCore> {
                 growable: false,
               )),
       builder: (context, snapshot) {
+        print('### MessageListCore stream build');
         if (snapshot.hasError) {
+          print('### hasError');
           return widget.errorWidgetBuilder(context, snapshot.error!);
         } else if (!snapshot.hasData) {
+          print('### hasData');
           return widget.loadingBuilder(context);
         } else {
+          print('### else');
           final messageList =
               snapshot.data?.reversed.toList(growable: false) ?? [];
           if (messageList.isEmpty && !_isThreadConversation) {
+            print('### isEmpty');
             if (_upToDate) {
+              print('### upToDate - empty builder');
               return widget.emptyBuilder(context);
             }
           } else {
             _messages = messageList;
           }
+          print('### return messageListBuilder');
           return widget.messageListBuilder(context, _messages);
         }
       },
